@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Expense Tracker</h2>
+        <form id="expense-form" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="date" required>
+                <div class="invalid-feedback">Please provide a valid date.</div>
+            </div>
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount</label>
+                <input type="number" class="form-control" id="amount" placeholder="Enter amount" required>
+                <div class="invalid-feedback">Please enter an amount.</div>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" id="category" required>
+                    <option value="" selected disabled>Select category</option>
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Entertainment">Entertainment</option>
+                </select>
+                <div class="invalid-feedback">Please select a category.</div>
+            </div>
+            <div class="mb-3">
+                <label for="comment" class="form-label">Comment</label>
+                <textarea class="form-control" id="comment" rows="3" placeholder="Enter a comment"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Expense</button>
+        </form>
+
+        <hr class="mt-4">
+        <h3>Expenses</h3>
+        <ul id="expense-list" class="list-group mt-3"></ul>
+    </div>
+
+    <script>
+        // Load expenses from Local Storage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadExpenses();
+        });
+
+        // Form submission  
+        document.getElementById('expense-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const form = event.target;
+
+            if (form.checkValidity()) {
+                const date = document.getElementById('date').value;
+                const amount = document.getElementById('amount').value;
+                const category = document.getElementById('category').value;
+                const comment = document.getElementById('comment').value;
+
+                const expense = {
+                    date,
+                    amount,
+                    category,
+                    comment
+                };
+
+                saveExpense(expense);
+                displayExpense(expense);
+                form.reset();
+                form.classList.remove('was-validated');
+            } else {
+                form.classList.add('was-validated');
+            }
+        });
+
+        // Save expense to Local Storage
+        function saveExpense(expense) {
+            let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+            expenses.push(expense);
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+
+        // Load and display all expenses
+        function loadExpenses() {
+            let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+            expenses.forEach(expense => displayExpense(expense));
+        }
+
+        // Display an expense
+        function displayExpense(expense) {
+            const list = document.getElementById('expense-list');
+            const listItem = document.createElement('li');
+            listItem.classList.add('list-group-item');
+            listItem.innerHTML = `<strong>${expense.date}</strong> - ${expense.amount} - ${expense.category} <br> ${expense.comment}`;
+            list.appendChild(listItem);
+        }
+    </script>
+</body>
+</html>
